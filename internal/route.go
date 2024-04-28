@@ -4,8 +4,6 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 
-	eSwagger "github.com/swaggo/echo-swagger"
-
 	"github.com/dimaskiddo/go-whatsapp-multidevice-rest/docs"
 	"github.com/dimaskiddo/go-whatsapp-multidevice-rest/pkg/auth"
 	"github.com/dimaskiddo/go-whatsapp-multidevice-rest/pkg/router"
@@ -19,7 +17,7 @@ import (
 
 func Routes(e *echo.Echo) {
 	// Configure OpenAPI / Swagger
-	docs.SwaggerInfo.BasePath = router.BaseURL
+	// docs.SwaggerInfo.BasePath = router.BaseURL
 
 	// Route for Index
 	// ---------------------------------------------
@@ -28,7 +26,7 @@ func Routes(e *echo.Echo) {
 
 	// Route for OpenAPI / Swagger
 	// ---------------------------------------------
-	e.GET(router.BaseURL+"/docs/*", eSwagger.WrapHandler)
+	// e.GET(router.BaseURL+"/docs/*", eSwagger.WrapHandler)
 
 	// Route for Auth
 	// ---------------------------------------------
