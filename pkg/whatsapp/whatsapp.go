@@ -36,6 +36,7 @@ var WhatsAppClient = make(map[string]*whatsmeow.Client)
 
 var (
 	WhatsAppClientProxyURL string
+	WhatsAppOS             string
 )
 
 func init() {
@@ -57,6 +58,11 @@ func init() {
 	}
 
 	WhatsAppClientProxyURL, _ = env.GetEnvString("WHATSAPP_CLIENT_PROXY_URL")
+
+	WhatsAppOS, err = env.GetEnvString("WHATSAPP_OS")
+	if err != nil {
+		WhatsAppOS = "Chrome (" + WhatsAppGetUserOS() + ")"
+	}
 
 	WhatsAppDatastore = datastore
 }
@@ -236,7 +242,7 @@ func WhatsAppLoginPair(jid string) (string, int, error) {
 			}
 
 			// Request Pairing Code
-			code, err := WhatsAppClient[jid].PairPhone(jid, true, whatsmeow.PairClientChrome, "Chrome ("+WhatsAppGetUserOS()+")")
+			code, err := WhatsAppClient[jid].PairPhone(jid, true, whatsmeow.PairClientChrome, WhatsAppOS)
 			if err != nil {
 				return "", 0, err
 			}

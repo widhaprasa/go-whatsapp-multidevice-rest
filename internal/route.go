@@ -4,7 +4,6 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 
-	"github.com/dimaskiddo/go-whatsapp-multidevice-rest/docs"
 	"github.com/dimaskiddo/go-whatsapp-multidevice-rest/pkg/auth"
 	"github.com/dimaskiddo/go-whatsapp-multidevice-rest/pkg/router"
 
