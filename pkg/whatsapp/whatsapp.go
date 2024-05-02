@@ -59,8 +59,8 @@ func init() {
 
 	WhatsAppClientProxyURL, _ = env.GetEnvString("WHATSAPP_CLIENT_PROXY_URL")
 
-	WhatsAppOS, err = env.GetEnvString("WHATSAPP_OS")
-	if err != nil {
+	WhatsAppOS, _ = env.GetEnvString("WHATSAPP_OS")
+	if len(WhatsAppOS) <= 0 {
 		WhatsAppOS = "Chrome (" + WhatsAppGetUserOS() + ")"
 	}
 
@@ -78,7 +78,7 @@ func WhatsAppInitClient(device *store.Device, jid string) {
 		}
 
 		// Set Client Properties
-		store.DeviceProps.Os = proto.String(WhatsAppGetUserOS())
+		store.DeviceProps.Os = proto.String(WhatsAppOS)
 		store.DeviceProps.PlatformType = WhatsAppGetUserAgent("chrome").Enum()
 		store.DeviceProps.RequireFullSync = proto.Bool(false)
 
