@@ -274,7 +274,7 @@ func SendText(c echo.Context) error {
 
 	var reqSendMessage typWhatsApp.RequestSendMessage
 	reqSendMessage.RJID = strings.TrimSpace(c.FormValue("msisdn"))
-	reqSendMessage.Message = strings.TrimSpace(c.FormValue("message"))
+	reqSendMessage.Message = strings.Replace(strings.TrimSpace(c.FormValue("message")), "\\n", "\n", -1)
 
 	if len(reqSendMessage.RJID) == 0 {
 		return router.ResponseBadRequest(c, "Missing Form Value MSISDN")
