@@ -200,7 +200,7 @@ func WhatsAppLogin(jid string) (string, int, error) {
 		if WhatsAppClient[jid].Store.ID == nil {
 			// Device ID is not Exist
 			// Generate QR Code
-			qrChanGenerate, _ := WhatsAppClient[jid].GetQRChannel(context.Background())
+			qrChanGenerate, _ := WhatsAppClient[jid].GetQRChannel(Context)
 
 			// Connect WebSocket while Initialize QR Code Data to be Sent
 			err := WhatsAppClient[jid].Connect()
