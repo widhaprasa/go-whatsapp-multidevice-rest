@@ -39,6 +39,7 @@ var WhatsAppClient = make(map[string]*whatsmeow.Client)
 var (
 	WhatsAppClientProxyURL string
 	WhatsAppOS             string
+	Context                = context.Background()
 )
 
 func init() {
@@ -54,7 +55,7 @@ func init() {
 		log.Print(nil).Fatal("Error Parse Environment Variable for WhatsApp Client Datastore URI")
 	}
 
-	datastore, err := sqlstore.New(dbType, dbURI, nil)
+	datastore, err := sqlstore.New(Context, dbType, dbURI, nil)
 	if err != nil {
 		log.Print(nil).Fatal("Error Connect WhatsApp Client Datastore")
 	}
@@ -112,9 +113,6 @@ func WhatsAppInitClient(device *store.Device, jid string) {
 
 		// Set WhatsApp Client Auto Trust Identity
 		WhatsAppClient[jid].AutoTrustIdentity = true
-
-		// Disable Self Broadcast
-		WhatsAppClient[jid].DontSendSelfBroadcast = true
 	}
 }
 
@@ -202,7 +200,7 @@ func WhatsAppLogin(jid string) (string, int, error) {
 		if WhatsAppClient[jid].Store.ID == nil {
 			// Device ID is not Exist
 			// Generate QR Code
-			qrChanGenerate, _ := WhatsAppClient[jid].GetQRChannel(context.Background())
+			qrChanGenerate, _ := WhatsAppClient[jid].GetQRChannel(Context)
 
 			// Connect WebSocket while Initialize QR Code Data to be Sent
 			err := WhatsAppClient[jid].Connect()
@@ -244,7 +242,7 @@ func WhatsAppLoginPair(jid string) (string, int, error) {
 			}
 
 			// Request Pairing Code
-			code, err := WhatsAppClient[jid].PairPhone(jid, true, whatsmeow.PairClientChrome, WhatsAppOS)
+			code, err := WhatsAppClient[jid].PairPhone(Context, jid, true, whatsmeow.PairClientChrome, WhatsAppOS)
 			if err != nil {
 				return "", 0, err
 			}
@@ -298,13 +296,13 @@ func WhatsAppLogout(jid string) error {
 			WhatsAppPresence(jid, false)
 
 			// Logout WhatsApp Client and Disconnect from WebSocket
-			err = WhatsAppClient[jid].Logout()
+			err = WhatsAppClient[jid].Logout(Context)
 			if err != nil {
 				// Force Disconnect
 				WhatsAppClient[jid].Disconnect()
 
 				// Manually Delete Device from Datastore Store
-				err = WhatsAppClient[jid].Store.Delete()
+				err = WhatsAppClient[jid].Store.Delete(Context)
 				if err != nil {
 					return err
 				}
@@ -986,11 +984,11 @@ func WhatsAppSendLink(ctx context.Context, jid string, rjid string, linkCaption 
 
 		msgContent := &waE2E.Message{
 			ExtendedTextMessage: &waE2E.ExtendedTextMessage{
-				Text:         proto.String(msgText),
-				Title:        proto.String(urlTitle),
-				MatchedText:  proto.String(linkURL),
-				CanonicalURL: proto.String(linkURL),
-				Description:  proto.String(urlDescription),
+				Text:        proto.String(msgText),
+				Title:       proto.String(urlTitle),
+				MatchedText: proto.String(linkURL),
+				// CanonicalURL: proto.String(linkURL),
+				Description: proto.String(urlDescription),
 			},
 		}
 
