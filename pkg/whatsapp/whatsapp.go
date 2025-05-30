@@ -39,7 +39,8 @@ var WhatsAppClient = make(map[string]*whatsmeow.Client)
 var (
 	WhatsAppClientProxyURL string
 	WhatsAppOS             string
-	Context                = context.Background()
+	WhatsappPlatformType   waCompanionReg.DeviceProps_PlatformType = waCompanionReg.DeviceProps_CLOUD_API
+	Context                                                        = context.Background()
 )
 
 func init() {
@@ -64,7 +65,7 @@ func init() {
 
 	WhatsAppOS, _ = env.GetEnvString("WHATSAPP_OS")
 	if len(WhatsAppOS) <= 0 {
-		WhatsAppOS = "Chrome (" + WhatsAppGetUserOS() + ")"
+		WhatsappPlatformType = waCompanionReg.DeviceProps_CHROME
 	}
 
 	WhatsAppDatastore = datastore
@@ -82,7 +83,7 @@ func WhatsAppInitClient(device *store.Device, jid string) {
 
 		// Set Client Properties
 		store.DeviceProps.Os = proto.String(WhatsAppOS)
-		store.DeviceProps.PlatformType = WhatsAppGetUserAgent("chrome").Enum()
+		store.DeviceProps.PlatformType = WhatsappPlatformType.Enum()
 		store.DeviceProps.RequireFullSync = proto.Bool(false)
 
 		// Set Client Versions
@@ -242,7 +243,7 @@ func WhatsAppLoginPair(jid string) (string, int, error) {
 			}
 
 			// Request Pairing Code
-			code, err := WhatsAppClient[jid].PairPhone(Context, jid, true, whatsmeow.PairClientChrome, WhatsAppOS)
+			code, err := WhatsAppClient[jid].PairPhone(Context, jid, true, whatsmeow.PairClientChrome, "Chrome ("+WhatsAppGetUserOS()+")")
 			if err != nil {
 				return "", 0, err
 			}
